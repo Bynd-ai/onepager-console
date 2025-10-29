@@ -15,21 +15,30 @@ import os
 from typing import List, Dict, Any
 import json
 
-# Add the parent directory to the Python path to access the app services
-sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'backend_py'))
+# Add the app directory to the Python path to access the app services
+sys.path.append(os.path.join(os.path.dirname(__file__), 'app'))
 
-# Set environment variables from Streamlit secrets before importing services
+# Load environment variables from .env file first, then from Streamlit secrets
+from dotenv import load_dotenv
+
+# Load .env file if it exists
+load_dotenv()
+
+# Set environment variables from Streamlit secrets (overrides .env if present)
 try:
     if 'supabase' in st.secrets:
         os.environ['SUPABASE_URL'] = st.secrets['supabase']['url']
         os.environ['SUPABASE_ANON_KEY'] = st.secrets['supabase']['key']
+        st.success("✅ Using Supabase credentials from Streamlit secrets")
+    elif os.getenv('SUPABASE_URL') and os.getenv('SUPABASE_ANON_KEY'):
+        st.success("✅ Using Supabase credentials from .env file")
     else:
-        st.warning("⚠️ Supabase secrets not found. App will run in demo mode.")
+        st.warning("⚠️ Supabase credentials not found in secrets or .env. App will run in demo mode.")
 except Exception as e:
     st.warning(f"⚠️ Error loading secrets: {str(e)}. App will run in demo mode.")
 
-from app.services.database_service import DatabaseService, OnePagerRecord
-from app.services.request_manager import request_manager
+from app.database_service import DatabaseService, OnePagerRecord
+from app.request_manager import request_manager
 
 # Page configuration
 st.set_page_config(
@@ -68,12 +77,12 @@ class AdminConsole:
         self.initialize_database()
 
     def initialize_database(self):
-        """Initialize database connection using Streamlit secrets"""
+        """Initialize database connection using environment variables or Streamlit secrets"""
         try:
-            # Set environment variables from Streamlit secrets
-            if 'supabase' in st.secrets:
-                os.environ['SUPABASE_URL'] = st.secrets['supabase']['url']
-                os.environ['SUPABASE_KEY'] = st.secrets['supabase']['key']
+            # Environment variables should already be set from the main initialization
+            # Just verify they exist
+            if not os.getenv('SUPABASE_URL') or not os.getenv('SUPABASE_ANON_KEY'):
+                raise ValueError("Supabase credentials not found in environment variables")
 
             self.db_service = DatabaseService()
             st.success("✅ Database connected successfully")
