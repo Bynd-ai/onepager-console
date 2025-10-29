@@ -1,0 +1,35 @@
+# Streamlit Cloud Requirements for Admin Console
+# Core dependencies
+streamlit==1.29.0
+pandas==2.2.3
+plotly==5.17.0
+
+# Database and API dependencies
+supabase==1.2.0
+python-dotenv==1.0.0
+
+# Async support
+aiohttp==3.9.1
+aiofiles==24.1.0
+
+# Data processing
+openpyxl==3.1.5
+PyYAML==6.0.2
+
+# Pydantic for data models
+pydantic==2.9.2
+
+# HTTP client
+httpx>=0.24,<0.26
+
+# Azure storage (if needed for blob access)
+azure-storage-blob==12.23.1
+
+# Image processing (if needed)
+Pillow==10.4.0
+
+# Retry logic
+tenacity>=8.1.0,<9
+
+# Search API (if needed)
+serpapi==0.1.5
